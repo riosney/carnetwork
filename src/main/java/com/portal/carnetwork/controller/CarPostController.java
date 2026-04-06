@@ -1,6 +1,7 @@
 package com.portal.carnetwork.controller;
 
 import com.portal.carnetwork.dto.CarPostDTO;
+import com.portal.carnetwork.message.KafkaProducerMessage;
 import com.portal.carnetwork.service.CarPostStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,10 +12,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/car")
-public class CarPosController {
+public class CarPostController {
 
     @Autowired
     private CarPostStoreService carPostStoreService;
+
+    @Autowired
+    private KafkaProducerMessage kafkaProducerMessage;
 
     @GetMapping("/posts")
     public ResponseEntity<List<CarPostDTO>> getCarSales(){
@@ -30,6 +34,12 @@ public class CarPosController {
     @DeleteMapping("/{id}")
     public ResponseEntity deleteCarForSales(@PathVariable("id") String id) {
         carPostStoreService.removeCarForSale(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/post")
+    public ResponseEntity postCarForSales(@RequestBody CarPostDTO carPostDTO) {
+        kafkaProducerMessage.sendMessage(carPostDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
