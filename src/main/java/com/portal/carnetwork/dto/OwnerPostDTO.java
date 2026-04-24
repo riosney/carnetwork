@@ -15,6 +15,6 @@ public class OwnerPostDTO {
 
     private String name;
     private String type;
-    private String contactNumnber;
+    private String contactNumber;
 
 }
